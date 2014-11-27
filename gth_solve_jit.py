@@ -95,26 +95,41 @@ def gth_solve(A, overwrite=False):
 
 
 def gth_solve_jit(A, overwrite=False):
-    r"""
+    """
     JIT-compiled version of `gth_solve`.
 
     """
-    A1 = np.array(A, dtype=float, copy=not overwrite)
+    A1 = np.array(A, dtype=np.float64, copy=not overwrite)
 
     if len(A1.shape) != 2 or A1.shape[0] != A1.shape[1]:
         raise ValueError('matrix must be square')
 
     n = A1.shape[0]
+    x = np.zeros(n, dtype=np.float64)
 
-    x = np.zeros(n)
-
-    _gth_solve_jit_loops(A1, n, x)
+    _gth_solve_jit(A1, n, x)
 
     return x
 
 
 @jit('void(float64[:,:], int64, float64[:])', nopython=True)
-def _gth_solve_jit_loops(A, n, x):
+def _gth_solve_jit(A, n, out):
+    """
+    Main body of gth_solve.
+
+    Parameters
+    ----------
+    A : numpy.ndarray(float, ndim=2)
+        Stochastic matrix or generator matrix. Must be of shape n x n.
+        Data will be overwritten.
+
+    n : int
+        Value of A.shape[0].
+
+    out : numpy.ndarray(float, ndim=1)
+        Output array in which to place the stationary distribution of A.
+
+    """
     # === Reduction === #
     for k in range(n-1):
         scale = np.sum(A[k, k+1:n])
@@ -132,12 +147,12 @@ def _gth_solve_jit_loops(A, n, x):
                 A[i, j] += A[i, k] * A[k, j]
 
     # === Backward substitution === #
-    x[n-1] = 1
+    out[n-1] = 1
     for k in range(n-2, -1, -1):
         for i in range(k+1, n):
-            x[k] += x[i] * A[i, k]
+            out[k] += out[i] * A[i, k]
 
     # === Normalization === #
-    s = np.sum(x)
+    norm = np.sum(out)
     for k in range(n):
-        x[k] /= s
+        out[k] /= norm
