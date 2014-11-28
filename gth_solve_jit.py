@@ -142,7 +142,6 @@ def _gth_solve_jit(A, n, out):
         for i in range(k+1, n):
             A[i, k] /= scale
 
-        for i in range(k+1, n):
             for j in range(k+1, n):
                 A[i, j] += A[i, k] * A[k, j]
 
