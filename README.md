@@ -9,3 +9,8 @@ JIT-compiled implementation of gth_solve
   (MacBook Pro Retina, Retina, 13-inch, Late 2013)
 * [Demonstration 3](http://nbviewer.ipython.org/github/oyamad/gth_solve_numba/blob/master/gth_solve_jit_demo03.ipynb)
   (MacBook Pro Retina, Mid 2012)
+
+## Loop-Jitting (Numba 0.15.1)
+
+* [Demonstration 1](http://nbviewer.ipython.org/github/oyamad/gth_solve_numba/blob/master/loop_jitting01.ipynb)
+  (MacBook Pro Retina, Mid 2012)
