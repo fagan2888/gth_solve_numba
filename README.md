@@ -14,3 +14,7 @@ JIT-compiled implementation of gth_solve
 
 * [Demonstration 1](http://nbviewer.ipython.org/github/oyamad/gth_solve_numba/blob/master/loop_jitting01.ipynb)
   (MacBook Pro Retina, Mid 2012)
+* [Demonstration 2](http://nbviewer.ipython.org/github/oyamad/gth_solve_numba/blob/master/loop_jitting02.ipynb)
+  (Mac Pro Quad-Core (MacPro4,1)) `if` statement with `break` removed
+* [Demonstration 3](http://nbviewer.ipython.org/github/oyamad/gth_solve_numba/blob/master/loop_jitting03.ipynb)
+  (MacBook Pro Retina, Mid 2012) `if` statement with `break` removed
