@@ -94,64 +94,48 @@ def gth_solve(A, overwrite=False):
     return x
 
 
-def gth_solve_jit(A, overwrite=False):
+@jit
+def gth_solve_jit(A):
     """
     JIT-compiled version of `gth_solve`.
 
     """
-    A1 = np.array(A, dtype=np.float64, copy=not overwrite)
+    #A1 = np.array(A, dtype=np.float64)
+    A1 = np.array(A, dtype=float)
 
     if len(A1.shape) != 2 or A1.shape[0] != A1.shape[1]:
-        raise ValueError('matrix must be square')
+        # raise ValueError('matrix must be square')  # Not supported
+        raise ValueError
 
     n = A1.shape[0]
-    x = np.zeros(n, dtype=np.float64)
 
-    _gth_solve_jit(A1, n, x)
+    #x = np.zeros(n, dtype=np.float64)
+    x = np.zeros(n)
 
-    return x
-
-
-@jit('void(float64[:,:], int64, float64[:])', nopython=True)
-def _gth_solve_jit(A, n, out):
-    """
-    Main body of gth_solve.
-
-    Parameters
-    ----------
-    A : numpy.ndarray(float, ndim=2)
-        Stochastic matrix or generator matrix. Must be of shape n x n.
-        Data will be overwritten.
-
-    n : int
-        Value of A.shape[0].
-
-    out : numpy.ndarray(float, ndim=1)
-        Output array in which to place the stationary distribution of A.
-
-    """
     # === Reduction === #
     for k in range(n-1):
-        scale = np.sum(A[k, k+1:n])
-        if scale <= 0:
-            # There is one (and only one) recurrent class contained in
-            # {0, ..., k};
-            # compute the solution associated with that recurrent class.
-            n = k+1
-            break
+        scale = np.sum(A1[k, k+1:n])
+        #if scale <= 0:
+        #    # There is one (and only one) recurrent class contained in
+        #    # {0, ..., k};
+        #    # compute the solution associated with that recurrent class.
+        #    n = k+1
+        #    break
         for i in range(k+1, n):
-            A[i, k] /= scale
+            A1[i, k] /= scale
 
             for j in range(k+1, n):
-                A[i, j] += A[i, k] * A[k, j]
+                A1[i, j] += A1[i, k] * A1[k, j]
 
     # === Backward substitution === #
-    out[n-1] = 1
+    x[n-1] = 1
     for k in range(n-2, -1, -1):
         for i in range(k+1, n):
-            out[k] += out[i] * A[i, k]
+            x[k] += x[i] * A1[i, k]
 
     # === Normalization === #
-    norm = np.sum(out)
+    norm = np.sum(x)
     for k in range(n):
-        out[k] /= norm
+        x[k] /= norm
+
+    return x

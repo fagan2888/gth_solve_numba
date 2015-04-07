@@ -72,13 +72,13 @@ class Matrices:
         }
         self.stoch_matrix_dicts.append(matrix_dict)
 
-        matrix_dict = {
-            # Reducible matrix
-            'A': np.array([[1, 0], [0, 1]]),
-            # Stationary dist whose support contains index 0
-            'stationary_dist': np.array([1, 0]),
-        }
-        self.stoch_matrix_dicts.append(matrix_dict)
+        #matrix_dict = {
+        #    # Reducible matrix
+        #    'A': np.array([[1, 0], [0, 1]]),
+        #    # Stationary dist whose support contains index 0
+        #    'stationary_dist': np.array([1, 0]),
+        #}
+        #self.stoch_matrix_dicts.append(matrix_dict)
 
         matrix_dict = {
             'A': KMR_Markov_matrix_sequential(N=27, p=1./3, epsilon=1e-2),
