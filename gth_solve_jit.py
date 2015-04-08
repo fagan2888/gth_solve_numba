@@ -113,19 +113,25 @@ def gth_solve_jit(A):
     x = np.zeros(n)
 
     # === Reduction === #
+    SCALE_NONZERO = 1
     for k in range(n-1):
-        scale = np.sum(A1[k, k+1:n])
-        #if scale <= 0:
-        #    # There is one (and only one) recurrent class contained in
-        #    # {0, ..., k};
-        #    # compute the solution associated with that recurrent class.
-        #    n = k+1
-        #    break
-        for i in range(k+1, n):
-            A1[i, k] /= scale
+        if SCALE_NONZERO == 1:
+            scale = np.sum(A1[k, k+1:n])
+            if scale <= 0:
+                # There is one (and only one) recurrent class contained in
+                # {0, ..., k};
+                # compute the solution associated with that recurrent class.
+                n = k+1
+                # break
+                # `break` statement is not supported for auto jitting
+                # see github.com/numba/numba/pull/819
+                # so need to use the flag `SCALE_NONZERO`
+                SCALE_NONZERO = 0
+            for i in range(k+1, n):
+                A1[i, k] /= scale
 
-            for j in range(k+1, n):
-                A1[i, j] += A1[i, k] * A1[k, j]
+                for j in range(k+1, n):
+                    A1[i, j] += A1[i, k] * A1[k, j]
 
     # === Backward substitution === #
     x[n-1] = 1
